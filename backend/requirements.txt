@@ -1,11 +1,13 @@
 fastapi
 uvicorn[standard]
 SQLAlchemy
-pydantic
+pydantic[email]
 python-dotenv
 passlib[bcrypt]
+bcrypt<4
 python-jose[cryptography]
 python-multipart
+aiofiles
 alembic
 pytest
-httpx
+httpx<0.25

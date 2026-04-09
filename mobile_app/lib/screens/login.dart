@@ -11,13 +11,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailCtrl = TextEditingController();
   final _pwCtrl = TextEditingController();
 
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _pwCtrl.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
     final email = _emailCtrl.text.trim();
     final pw = _pwCtrl.text;
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final ok = await auth.login(email, pw);
     if (ok) {
-      Navigator.pushReplacementNamed(context, '/swipe');
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       ScaffoldMessenger.of(
         context,

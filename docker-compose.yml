@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./dev.db
+      - SECRET_KEY=change-me-in-production
+      - ACCESS_TOKEN_EXPIRE_MINUTES=60
+      - REFRESH_TOKEN_EXPIRE_DAYS=30
+      - CORS_ALLOW_ORIGINS=http://localhost:3000,http://localhost:8000
+      - BASE_URL=http://localhost:8000
+      - UPLOADS_DIR=uploads
+      - AI_FEATURES_ENABLED=false
+      - AI_GATE_APPROVED=false
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/dev.db:/app/dev.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

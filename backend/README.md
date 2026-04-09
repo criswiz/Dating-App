@@ -21,7 +21,28 @@ ACCESS_TOKEN_EXPIRE_MINUTES=60
 3. Run the app locally:
 
 ```bash
+alembic upgrade head
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Database migrations
+
+- Create a new migration after model changes:
+
+```bash
+alembic revision --autogenerate -m "describe change"
+```
+
+- Apply migrations:
+
+```bash
+alembic upgrade head
+```
+
+- Roll back one revision:
+
+```bash
+alembic downgrade -1
 ```
 
 What is here

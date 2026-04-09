@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/digitalhub/Documents/IT Team/Dev/Dating App/backend/.venv/bin/python" "$0" "$@"
+'''exec' "/Users/digitalhub/Documents/IT Team/Dev/Dating-App/backend/.venv/bin/python3.10" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re

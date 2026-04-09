@@ -12,6 +12,14 @@ class _SignupScreenState extends State<SignupScreen> {
   final _pwCtrl = TextEditingController();
   final _nameCtrl = TextEditingController();
 
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _pwCtrl.dispose();
+    _nameCtrl.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
     final email = _emailCtrl.text.trim();
     final pw = _pwCtrl.text;
@@ -19,7 +27,7 @@ class _SignupScreenState extends State<SignupScreen> {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final ok = await auth.signup(email, pw, name: name);
     if (ok) {
-      Navigator.pushReplacementNamed(context, '/swipe');
+      Navigator.pushReplacementNamed(context, '/home');
       return;
     }
 

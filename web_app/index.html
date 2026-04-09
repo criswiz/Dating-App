@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dating App Web</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Dating App Web</h1>
+      <p>Bootstrap web parity for auth, discover, matches, and chat.</p>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2>Auth</h2>
+        <label>Email <input id="email" type="email" placeholder="you@example.com" /></label>
+        <label>Password <input id="password" type="password" placeholder="password" /></label>
+        <label>Name <input id="name" type="text" placeholder="Your name" /></label>
+        <button id="signupBtn">Sign Up</button>
+        <button id="loginBtn">Login</button>
+        <div id="authStatus" class="status"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Discover</h2>
+        <button id="discoverBtn">Load Discover Feed</button>
+        <ul id="discoverList"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Matches</h2>
+        <button id="matchesBtn">Load Matches</button>
+        <ul id="matchesList"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Chat</h2>
+        <button id="threadsBtn">Load Threads</button>
+        <label>Thread ID <input id="threadId" type="number" min="1" /></label>
+        <label>Message <input id="messageText" type="text" placeholder="Say hi..." /></label>
+        <button id="sendMsgBtn">Send</button>
+        <ul id="threadList"></ul>
+        <ul id="messageList"></ul>
+      </section>
+    </main>
+
+    <script src="./main.js"></script>
+  </body>
+</html>

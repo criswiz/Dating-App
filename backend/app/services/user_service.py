@@ -11,6 +11,35 @@ def create_user(db: Session, email: str, password: str, name: str | None = None,
     return user
 
 
+def create_user_with_profile(
+    db: Session,
+    email: str,
+    password: str,
+    name: str | None = None,
+    bio: str | None = None,
+    age: int | None = None,
+    gender: str | None = None,
+    intent: str | None = None,
+    city: str | None = None,
+    interests: str | None = None,
+):
+    user = User(
+        email=email,
+        hashed_password=get_password_hash(password),
+        name=name,
+        bio=bio,
+        age=age,
+        gender=gender,
+        intent=intent,
+        city=city,
+        interests=interests,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
 
