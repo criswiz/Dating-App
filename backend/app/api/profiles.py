@@ -78,6 +78,11 @@ def discover_profiles(
     min_age: int | None = Query(default=None, ge=18),
     max_age: int | None = Query(default=None, ge=18),
     intent: str | None = Query(default=None),
+    tribe: str | None = Query(default=None),
+    religion: str | None = Query(default=None),
+    relationship_status: str | None = Query(default=None),
+    has_kids: str | None = Query(default=None),
+    search: str | None = Query(default=None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -90,6 +95,19 @@ def discover_profiles(
         candidates_query = candidates_query.filter(User.age <= max_age)
     if intent:
         candidates_query = candidates_query.filter(User.intent == intent)
+    if tribe:
+        candidates_query = candidates_query.filter(User.tribe.ilike(f"%{tribe}%"))
+    if religion:
+        candidates_query = candidates_query.filter(User.religion == religion)
+    if relationship_status:
+        candidates_query = candidates_query.filter(User.relationship_status == relationship_status)
+    if has_kids:
+        candidates_query = candidates_query.filter(User.has_kids == has_kids)
+    if search:
+        term = f"%{search}%"
+        candidates_query = candidates_query.filter(
+            User.name.ilike(term) | User.city.ilike(term) | User.bio.ilike(term) | User.occupation.ilike(term)
+        )
 
     interacted_ids = {
         row[0]
@@ -116,8 +134,15 @@ def discover_profiles(
                 name=candidate.name,
                 bio=candidate.bio,
                 age=candidate.age,
+                gender=candidate.gender,
                 city=candidate.city,
                 interests=candidate.interests,
+                tribe=candidate.tribe,
+                religion=candidate.religion,
+                relationship_status=candidate.relationship_status,
+                has_kids=candidate.has_kids,
+                height=candidate.height,
+                occupation=candidate.occupation,
                 photo_url=candidate.photo_url,
                 score=compatibility_score(current_user, candidate),
             )

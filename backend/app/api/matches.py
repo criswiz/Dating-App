@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.models.user import User
 from app.models.social import Interaction, Match, ChatThread, UserBlock
-from app.schemas.social import InteractionRequest, InteractionResult, MatchOut
+from app.schemas.social import InteractionRequest, InteractionResult, MatchOut, MatchWithProfile
 from app.services.deps import get_current_user
 from app.services.rate_limit import interaction_limiter
 
@@ -135,7 +135,7 @@ def pass_user(
     return InteractionResult(matched=False, match_id=None)
 
 
-@router.get("/", response_model=list[MatchOut])
+@router.get("/", response_model=list[MatchWithProfile])
 def list_matches(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -149,4 +149,20 @@ def list_matches(
         .order_by(Match.created_at.desc())
         .all()
     )
-    return matches
+    result = []
+    for m in matches:
+        other_id = m.user_b_id if m.user_a_id == current_user.id else m.user_a_id
+        other = db.query(User).filter(User.id == other_id).first()
+        result.append(MatchWithProfile(
+            id=m.id,
+            user_a_id=m.user_a_id,
+            user_b_id=m.user_b_id,
+            is_active=m.is_active,
+            created_at=m.created_at,
+            other_user_id=other_id,
+            other_name=other.name if other else None,
+            other_photo_url=other.photo_url if other else None,
+            other_age=other.age if other else None,
+            other_city=other.city if other else None,
+        ))
+    return result

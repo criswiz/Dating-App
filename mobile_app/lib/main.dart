@@ -8,43 +8,46 @@ import 'screens/profile.dart';
 import 'providers/auth_provider.dart';
 import 'services/api_client.dart';
 import 'services/auth_service.dart';
+import 'theme.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final authProvider = AuthProvider();
+  final apiClient = ApiClient(
+    baseUrl: const String.fromEnvironment('API_BASE_URL',
+        defaultValue: 'http://127.0.0.1:8000'),
+    tokenGetter: () async => authProvider.token,
+  );
+  final authService = AuthService(apiClient: apiClient);
+  authProvider.setService(authService);
+
+  runApp(MyApp(authProvider: authProvider, apiClient: apiClient, authService: authService));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final AuthProvider authProvider;
+  final ApiClient apiClient;
+  final AuthService authService;
+
+  const MyApp({
+    super.key,
+    required this.authProvider,
+    required this.apiClient,
+    required this.authService,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
-        ProxyProvider<AuthProvider, ApiClient>(
-          update: (_, auth, __) => ApiClient(
-            baseUrl: const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://127.0.0.1:8000'),
-            tokenGetter: () async => auth.token,
-          ),
-        ),
-        ProxyProvider<ApiClient, AuthService>(
-          update: (_, api, __) => AuthService(apiClient: api),
-        ),
-        ProxyProvider<AuthService, AuthProvider>(
-          update: (_, service, authProvider) {
-            authProvider ??= AuthProvider();
-            authProvider.setService(service);
-            authProvider.loadFromStorage();
-            return authProvider;
-          },
-        ),
+        ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
+        Provider<ApiClient>.value(value: apiClient),
+        Provider<AuthService>.value(value: authService),
       ],
       child: MaterialApp(
         title: 'Dating App',
-        theme: ThemeData(
-          primarySwatch: Colors.pink,
-          useMaterial3: false,
-        ),
+        theme: AppTheme.light(),
         initialRoute: '/',
         routes: {
           '/': (ctx) => const _AuthGate(),
@@ -58,7 +61,7 @@ class MyApp extends StatelessWidget {
 
 /// Redirects to /home if already logged in, otherwise shows LoginScreen.
 class _AuthGate extends StatefulWidget {
-  const _AuthGate({Key? key}) : super(key: key);
+  const _AuthGate();
 
   @override
   State<_AuthGate> createState() => _AuthGateState();
@@ -93,7 +96,7 @@ class _AuthGateState extends State<_AuthGate> {
 
 /// Main shell with bottom navigation: Discover / Matches / Profile.
 class HomeShell extends StatefulWidget {
-  const HomeShell({Key? key}) : super(key: key);
+  const HomeShell({super.key});
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -112,15 +115,45 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _tab, children: _screens),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _tab,
-        onTap: (i) => setState(() => _tab = i),
-        selectedItemColor: Colors.pink,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Matches'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _tab,
+          onTap: (i) => setState(() => _tab = i),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          selectedItemColor: AppColors.pink,
+          unselectedItemColor: Colors.grey.shade400,
+          selectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w600, fontSize: 11),
+          unselectedLabelStyle: const TextStyle(fontSize: 11),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.explore_outlined),
+              activeIcon: Icon(Icons.explore_rounded),
+              label: 'Discover',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_border_rounded),
+              activeIcon: Icon(Icons.favorite_rounded),
+              label: 'Matches',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline_rounded),
+              activeIcon: Icon(Icons.person_rounded),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }

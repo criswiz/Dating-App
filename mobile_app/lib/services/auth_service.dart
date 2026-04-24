@@ -82,8 +82,32 @@ class AuthService {
 
   // ── Discovery ────────────────────────────────────────────────────────────────
 
-  Future<List<dynamic>?> fetchProfiles() async {
-    final data = await _client.getJson('/profiles/discover');
+  Future<List<dynamic>?> fetchProfiles({
+    int? minAge,
+    int? maxAge,
+    String? intent,
+    String? tribe,
+    String? religion,
+    String? relationshipStatus,
+    String? hasKids,
+    String? search,
+  }) async {
+    final params = <String, String>{};
+    if (minAge != null) params['min_age'] = '$minAge';
+    if (maxAge != null) params['max_age'] = '$maxAge';
+    if (intent != null && intent.isNotEmpty) params['intent'] = intent;
+    if (tribe != null && tribe.isNotEmpty) params['tribe'] = tribe;
+    if (religion != null && religion.isNotEmpty) params['religion'] = religion;
+    if (relationshipStatus != null && relationshipStatus.isNotEmpty) {
+      params['relationship_status'] = relationshipStatus;
+    }
+    if (hasKids != null && hasKids.isNotEmpty) params['has_kids'] = hasKids;
+    if (search != null && search.isNotEmpty) params['search'] = search;
+
+    final query = params.isEmpty
+        ? ''
+        : '?${params.entries.map((e) => '${e.key}=${Uri.encodeQueryComponent(e.value)}').join('&')}';
+    final data = await _client.getJson('/profiles/discover$query');
     if (data is List) return List<dynamic>.from(data);
     return null;
   }

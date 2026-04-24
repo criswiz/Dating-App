@@ -2,6 +2,12 @@ from pydantic import BaseModel, EmailStr, field_validator, ConfigDict
 from typing import Optional
 from datetime import datetime
 
+_STR_FIELDS = [
+    'bio', 'name', 'gender', 'intent', 'city', 'interests', 'tribe',
+    'religion', 'relationship_status', 'has_kids', 'want_kids',
+    'education', 'occupation', 'drinking', 'smoking', 'exercise', 'languages',
+]
+
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -13,6 +19,18 @@ class UserCreate(BaseModel):
     intent: Optional[str] = None
     city: Optional[str] = None
     interests: Optional[str] = None
+    tribe: Optional[str] = None
+    religion: Optional[str] = None
+    relationship_status: Optional[str] = None
+    has_kids: Optional[str] = None
+    want_kids: Optional[str] = None
+    height: Optional[int] = None
+    education: Optional[str] = None
+    occupation: Optional[str] = None
+    drinking: Optional[str] = None
+    smoking: Optional[str] = None
+    exercise: Optional[str] = None
+    languages: Optional[str] = None
 
     @field_validator('age')
     @classmethod
@@ -21,7 +39,14 @@ class UserCreate(BaseModel):
             raise ValueError('Age must be between 18 and 120')
         return v
 
-    @field_validator('bio', 'name', 'gender', 'intent', 'city', 'interests', mode='before')
+    @field_validator('height')
+    @classmethod
+    def validate_height(cls, v):
+        if v is not None and (v < 50 or v > 300):
+            raise ValueError('Height must be between 50 and 300 cm')
+        return v
+
+    @field_validator(*_STR_FIELDS, mode='before')
     @classmethod
     def validate_string_length(cls, v):
         if v is not None and len(str(v).strip()) > 500:
@@ -37,6 +62,18 @@ class ProfileUpdate(BaseModel):
     intent: Optional[str] = None
     city: Optional[str] = None
     interests: Optional[str] = None
+    tribe: Optional[str] = None
+    religion: Optional[str] = None
+    relationship_status: Optional[str] = None
+    has_kids: Optional[str] = None
+    want_kids: Optional[str] = None
+    height: Optional[int] = None
+    education: Optional[str] = None
+    occupation: Optional[str] = None
+    drinking: Optional[str] = None
+    smoking: Optional[str] = None
+    exercise: Optional[str] = None
+    languages: Optional[str] = None
 
     @field_validator('age')
     @classmethod
@@ -45,7 +82,14 @@ class ProfileUpdate(BaseModel):
             raise ValueError('Age must be between 18 and 120')
         return v
 
-    @field_validator('bio', 'name', 'gender', 'intent', 'city', 'interests', mode='before')
+    @field_validator('height')
+    @classmethod
+    def validate_height(cls, v):
+        if v is not None and (v < 50 or v > 300):
+            raise ValueError('Height must be between 50 and 300 cm')
+        return v
+
+    @field_validator(*_STR_FIELDS, mode='before')
     @classmethod
     def validate_string_length(cls, v):
         if v is not None and len(str(v).strip()) > 500:
@@ -79,6 +123,18 @@ class UserOut(BaseModel):
     intent: Optional[str] = None
     city: Optional[str] = None
     interests: Optional[str] = None
+    tribe: Optional[str] = None
+    religion: Optional[str] = None
+    relationship_status: Optional[str] = None
+    has_kids: Optional[str] = None
+    want_kids: Optional[str] = None
+    height: Optional[int] = None
+    education: Optional[str] = None
+    occupation: Optional[str] = None
+    drinking: Optional[str] = None
+    smoking: Optional[str] = None
+    exercise: Optional[str] = None
+    languages: Optional[str] = None
     photo_url: Optional[str] = None
     is_verified: bool
     created_at: datetime
